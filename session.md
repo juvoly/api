@@ -1,5 +1,3 @@
-Here's a markdown document describing the action with nice formatting, including the required values and an example in TypeScript:
-
 # Juvoly Session Creation
 
 This document describes how to create a new session using the Juvoly API.
