@@ -1,8 +1,10 @@
-# Juvoly API Session Creation
+Here's a markdown document describing the action with nice formatting, including the required values and an example in TypeScript:
 
-This document describes how to create a session using the Juvoly API.
+# Juvoly Session Creation
 
-## Endpoint
+This document describes how to create a new session using the Juvoly API.
+
+## API Endpoint
 
 ```
 POST https://prod.juvoly.nl/api/v2/rest/session
@@ -20,9 +22,10 @@ POST https://prod.juvoly.nl/api/v2/rest/session
 ## Example Usage (TypeScript)
 
 ```typescript
-import fetch from 'node-fetch';
+const juvolyClientId = 'your_client_id_here';
+const juvolyApiKey = 'your_api_key_here';
 
-async function createJuvolySession(juvolyClientId: string, juvolyApiKey: string): Promise<Response> {
+async function createJuvolySession(): Promise<JuvolySessionInfoV2> {
   const response = await fetch(
     'https://prod.juvoly.nl/api/v2/rest/session',
     {
@@ -30,35 +33,46 @@ async function createJuvolySession(juvolyClientId: string, juvolyApiKey: string)
       headers: {
         'X-Juvoly-Client-Id': juvolyClientId,
         'X-Juvoly-Api-Key': juvolyApiKey,
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    }
+    },
   );
 
-  return response;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
 }
-
-// Usage
-const clientId = 'your-client-id';
-const apiKey = 'your-api-key';
-
-createJuvolySession(clientId, apiKey)
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error('Error:', error));
 ```
-
-## Notes
-
-- Ensure that you replace `'your-client-id'` and `'your-api-key'` with your actual Juvoly Client ID and API Key.
-- This example uses `node-fetch`, but you can adapt it to use other HTTP clients or the built-in `fetch` in modern environments.
-- Always keep your API key secure and never expose it in client-side code.
 
 ## Response
 
-The API will respond with a JSON object containing session information. Handle the response accordingly in your application.
+The API returns a `JuvolySessionInfoV2` object with the following structure:
 
----
+```typescript
+export interface JuvolySessionInfoV2 {
+  clientId: string;
+  sessionId: string;
+  sessionCreateTime: Date;
+  sessionClaimTime: Date;
+}
+```
 
-For more information, please refer to the official Juvoly API documentation.
+### Response Fields
+
+| Field Name | Type | Description |
+|------------|------|-------------|
+| `clientId` | string | The client ID associated with the session |
+| `sessionId` | string | A unique identifier for the created session |
+| `sessionCreateTime` | Date | The timestamp when the session was created |
+| `sessionClaimTime` | Date | The timestamp when the session was claimed |
+
+## Notes
+
+- Ensure that you replace `'your_client_id_here'` and `'your_api_key_here'` with your actual Juvoly Client ID and API Key.
+- The `sessionCreateTime` and `sessionClaimTime` are returned as Date objects, which can be easily manipulated or formatted as needed in your application.
+- Always handle potential errors, such as network issues or invalid responses, in your implementation.
+
+Remember to keep your API key and client ID secure and never expose them in client-side code or public repositories.
